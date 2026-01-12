@@ -8,7 +8,6 @@ const app = express();
 await connectToMongoDB()
 app.use(express.json());
 
-
 // PostgreSQL (TEST)
 try {
   const result = await sql`select 1 as connected`;
