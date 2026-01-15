@@ -1,7 +1,7 @@
 
 import { ACCESS_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from "../../config/cookies.js";
 import User from "../../model/user/user.schema.js";
-import { signAccessToken, signRefreshToken } from "../utils/jwt.js";
+import { signAccessToken, signRefreshToken } from "../../utils/jwt.js";
 
 /* =====================================================
    REGISTER
