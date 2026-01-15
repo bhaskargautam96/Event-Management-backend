@@ -3,6 +3,9 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema(
   {
+    /* =========================
+       Basic Info
+    ========================= */
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -13,87 +16,130 @@ const userSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      required: [true, "Email is required"],
       unique: true,
       lowercase: true,
       trim: true,
       match: [/^\S+@\S+\.\S+$/, "Invalid email format"],
       index: true,
+      sparse: true, // 👈 required for Instagram (no email)
+    },
+
+    phone: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
 
     password: {
       type: String,
-      required: [true, "Password is required"],
       minlength: 8,
       select: false,
+      required: function () {
+        return !this.isSocialAccount;
+      },
     },
 
+    /* =========================
+       Auth & Roles
+    ========================= */
     role: {
       type: String,
       enum: ["SUPERADMIN", "ADMIN", "ORGANIZER", "CLIENT"],
       default: "CLIENT",
     },
 
-    isActive: {
-      type: Boolean,
-      default: true,
+    authProvider: {
+      type: String,
+      enum: ["LOCAL", "GOOGLE", "FACEBOOK", "INSTAGRAM"],
+      default: "LOCAL",
     },
+
+    isSocialAccount: {
+      type: Boolean,
+      default: false,
+    },
+
+    socialAccounts: {
+      googleId: { type: String, index: true },
+      facebookId: { type: String, index: true },
+      instagramId: { type: String, index: true },
+    },
+
+    /* =========================
+       Profile
+    ========================= */
     dob: {
       type: Date,
-      default: Date.now,
     },
-    phone: {
-      type: String,
-      unique:true,
-      default: "",
-    }, 
+
     address: {
       type: String,
       default: "",
     },
+
     profileImage: {
       type: String,
       default: "",
     },
+
     coverImage: {
       type: String,
       default: "",
     },
+
+    /* =========================
+       Verification
+    ========================= */
     isNumberVerified: {
       type: Boolean,
       default: false,
     },
+
     isEmailVerified: {
       type: Boolean,
       default: false,
     },
-      refreshTokens: [
+
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    /* =========================
+       Tokens
+    ========================= */
+    refreshTokens: [
       {
-        token: String,
+        token: { type: String },
         createdAt: {
           type: Date,
           default: Date.now,
         },
       },
     ],
+
+    /* =========================
+       Meta
+    ========================= */
+    lastLoginAt: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );
 
-/* =========================
-   Password Hashing
-========================= */
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function () {
+  if (!this.isModified("password") || !this.password) return;
   this.password = await bcrypt.hash(this.password, 12);
-  next();
 });
 
-/* =========================
-   Compare Password
-========================= */
+
+
 userSchema.methods.comparePassword = function (password) {
+  if (!this.password) return false;
   return bcrypt.compare(password, this.password);
 };
 
-export default mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+export default  User
