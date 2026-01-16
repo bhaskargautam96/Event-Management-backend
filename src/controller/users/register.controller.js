@@ -8,12 +8,10 @@ import { signAccessToken, signRefreshToken } from "../../utils/jwt.js";
 ===================================================== */
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
-
-    if (!name || !email || !password) {
+    const { name, email, password, phone, role } = req.body;
+    if (!name || !email || !password || !phone || !role) {
       return res.status(400).json({ message: "All fields are required" });
     }
-
     const existingUser = await User.findOne({
       $or: [{ email }, { phone }],
     });
@@ -29,6 +27,7 @@ export const registerController = async (req, res) => {
       email,
       password,
       phone,
+      role,
       authProvider: "LOCAL",
       isSocialAccount: false,
       isEmailVerified: false,
