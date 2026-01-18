@@ -1,13 +1,15 @@
 import express from "express";
-import connectToMongoDB from "./src/db/mongo.db.connection.js";
 import  "dotenv/config"
+import connectToMongoDB from "./src/db/mongo.db.connection.js";
 import sql from "./src/db/postgres.db.connection.js";
 import authRouter from "./src/routes/auth/auth.route.js";
 import { routerVersion1 } from "./src/constants.js";
+
 import passport from "./src/config/passport.js";
 import errorHandler from "./src/middleware/errorHandler.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { redisConnection } from "./src/config/redis.js";
 // dotenv.config()
 const app = express();
 
@@ -31,6 +33,8 @@ try {
 }
 
 app.use(`${routerVersion1}/auth`, authRouter);
+
+
 
 
 

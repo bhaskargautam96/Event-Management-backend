@@ -4,6 +4,9 @@ import ApiResponse from "../../utils/ApiResponse.js";
 import asyncHandler from "../../middleware/asycnHandler.middleware.js";
 import ApiError from "../../utils/ApiError.js";
 import { ACCESS_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from "../../config/cookies.js";
+import { generateOTP } from "../../utils/generateOtp.js";
+import { redisConnection } from "../../config/redis.js";
+import { mailQueue } from "../../queues/index.js";
 
 
 
@@ -114,3 +117,51 @@ export const logoutAllController = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+
+export const sendEmailVerificationOtp = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    throw new ApiError(400, "Email is required");
+  }
+
+  const user = await User.findOne({ email });
+  // if (!user) {
+  //   throw new ApiError(404, "User not found");
+  // }
+
+  if (user?.isEmailVerified) {
+    throw new ApiError(400, "Email already verified");
+  }
+
+  // 1️⃣ Generate OTP
+  const otp =generateOTP();
+
+  const redisKey = `email:otp:${email}`;
+
+  // 2️⃣ Store OTP in Redis with TTL (5 min)
+  await redisConnection.set(redisKey, otp, "EX", 300);
+
+  // 3️⃣ Send OTP via mail queue
+  await mailQueue.add("email-verification-otp", {
+    to: email,
+    subject: "Email Verification Code",
+    html: `
+      <h2>Email Verification</h2>
+      <p>Your verification code is:</p>
+      <h1>${otp}</h1>
+      <p>This code will expire in 5 minutes.</p>
+    `,
+  });
+
+
+  res.status(200).json({
+    success: true,
+    message: "Verification OTP sent to email",
+    data: {
+      email,
+      otp,
+    },
+  });
+});

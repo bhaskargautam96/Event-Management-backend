@@ -1,5 +1,7 @@
-
-import { ACCESS_COOKIE_OPTIONS, REFRESH_COOKIE_OPTIONS } from "../../config/cookies.js";
+import {
+  ACCESS_COOKIE_OPTIONS,
+  REFRESH_COOKIE_OPTIONS,
+} from "../../config/cookies.js";
 import User from "../../model/user/user.schema.js";
 import { signAccessToken, signRefreshToken } from "../../utils/jwt.js";
 
@@ -8,7 +10,7 @@ import { signAccessToken, signRefreshToken } from "../../utils/jwt.js";
 ===================================================== */
 export const registerController = async (req, res) => {
   try {
-    const { name, email, password, phone, role } = req.body;
+    const { name, email, password, phone, role, isEmailVerified } = req.body;
     if (!name || !email || !password || !phone || !role) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -21,6 +23,9 @@ export const registerController = async (req, res) => {
         message: "User already exists",
       });
     }
+    if (!isEmailVerified) {
+      return res.status(400).json({ message: "Email verification is required" });
+    }
 
     const user = await User.create({
       name,
@@ -30,7 +35,7 @@ export const registerController = async (req, res) => {
       role,
       authProvider: "LOCAL",
       isSocialAccount: false,
-      isEmailVerified: false,
+      isEmailVerified,
     });
 
     const accessToken = signAccessToken(user);
@@ -57,4 +62,3 @@ export const registerController = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-

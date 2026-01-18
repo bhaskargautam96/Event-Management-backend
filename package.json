@@ -23,8 +23,10 @@
     "ioredis": "^5.9.2",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
+    "nodemailer": "^7.0.12",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "postgres": "^3.4.8"
+    "postgres": "^3.4.8",
+    "resend": "^6.7.0"
   }
 }

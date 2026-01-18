@@ -1,7 +1,7 @@
 
 
 import express from "express";
-import { logoutAllController, logoutController, refreshTokenController } from "../../controller/auth/auth.controller.js";
+import { logoutAllController, logoutController, refreshTokenController, sendEmailVerificationOtp } from "../../controller/auth/auth.controller.js";
 import passport from "passport";
 import { googleAuthCallback } from "../../controller/auth/google.controller.js";
 import { authMiddleware } from "../../middleware/auth/auth.middleware.js";
@@ -15,6 +15,7 @@ authRouter.get("/refresh-token", refreshTokenController);
 authRouter.post("/logout", logoutController);
 authRouter.post("/login", loginController);
 authRouter.post("/register", registerController);
+authRouter.post("/send-verification-otp", sendEmailVerificationOtp);
 
 authRouter.get(
   "/google",
