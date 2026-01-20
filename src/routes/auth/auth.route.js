@@ -1,13 +1,14 @@
 
 
 import express from "express";
-import { logoutAllController, logoutController, refreshTokenController, sendEmailVerificationOtp } from "../../controller/auth/auth.controller.js";
+import { logoutAllController, logoutController, refreshTokenController } from "../../controller/auth/auth.controller.js";
 import passport from "passport";
 import { googleAuthCallback } from "../../controller/auth/google.controller.js";
 import { authMiddleware } from "../../middleware/auth/auth.middleware.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { loginController } from "../../controller/auth/login.controller.js";
 import { registerController } from "../../controller/users/register.controller.js";
+import { sendEmailVerificationOtp, verifyEmailOtp } from "../../controller/auth/verification.controller.js";
 
 const authRouter = express.Router();
 
@@ -16,6 +17,7 @@ authRouter.post("/logout", logoutController);
 authRouter.post("/login", loginController);
 authRouter.post("/register", registerController);
 authRouter.post("/send-verification-otp", sendEmailVerificationOtp);
+authRouter.post("/verify-otp", verifyEmailOtp);
 
 authRouter.get(
   "/google",
