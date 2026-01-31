@@ -7,6 +7,7 @@ import {
 
 export const googleAuthCallback = async (req, res) => {
   try {
+    console.log("HEEEEEEE")
     const profile = req.user;
 
     const googleId = profile.id;
