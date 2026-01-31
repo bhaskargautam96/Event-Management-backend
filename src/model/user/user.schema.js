@@ -44,8 +44,8 @@ const userSchema = new mongoose.Schema(
     ========================= */
     role: {
       type: String,
-      enum: ["SUPERADMIN", "ADMIN", "ORGANIZER", "CLIENT"],
-      default: "CLIENT",
+      enum: ["SUPERADMIN", "ADMIN", "ORGANIZER", "CLIENT","USER"],
+      default: "USER",
     },
 
     authProvider: {
