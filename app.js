@@ -19,9 +19,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin:isProductionEnv ? "https://eventwaale.in" : "http://localhost:5175", // 🔥 EXACT frontend URL
+    origin: isProductionEnv ? "https://eventwaale.in" : "http://localhost:5175", // 🔥 EXACT frontend URL
     credentials: true, // 🔥 REQUIRED
-  })
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  }),
 );
 
 // PostgreSQL (TEST) DATABASE CONNECTION
