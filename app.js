@@ -3,7 +3,7 @@ import  "dotenv/config"
 import connectToMongoDB from "./src/db/mongo.db.connection.js";
 import sql from "./src/db/postgres.db.connection.js";
 import authRouter from "./src/routes/auth/auth.route.js";
-import { routerVersion1 } from "./src/constants.js";
+import { isProductionEnv, routerVersion1 } from "./src/constants.js";
 
 import passport from "./src/config/passport.js";
 import errorHandler from "./src/middleware/errorHandler.middleware.js";
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5175", // 🔥 EXACT frontend URL
+    origin:isProductionEnv ? "https://event-management-frontend.vercel.app" : "http://localhost:5175", // 🔥 EXACT frontend URL
     credentials: true, // 🔥 REQUIRED
   })
 );
