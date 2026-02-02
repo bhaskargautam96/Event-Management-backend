@@ -3,7 +3,7 @@
 import express from "express";
 import { logoutAllController, logoutController, refreshTokenController } from "../../controller/auth/auth.controller.js";
 import passport from "passport";
-import { googleAuthCallback } from "../../controller/auth/google.controller.js";
+import { googleAuth, googleAuthCallback } from "../../controller/auth/google.controller.js";
 import { authMiddleware } from "../../middleware/auth/auth.middleware.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { loginController, passwordGenerate, setPasswordController } from "../../controller/auth/login.controller.js";
@@ -21,6 +21,8 @@ authRouter.post("/set-password", setPasswordController);
 
 authRouter.post("/send-verification-otp", sendEmailVerificationOtp);
 authRouter.post("/verify-otp", verifyEmailOtp);
+
+authRouter.post("/google", googleAuth);
 
 authRouter.get(
   "/google",
