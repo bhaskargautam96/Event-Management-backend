@@ -7,6 +7,7 @@ export const ACCESS_COOKIE_OPTIONS = {
   sameSite: isProd ? "none" : "lax",
   path: "/", // 🔥 REQUIRED
   maxAge: 60 * 60 * 1000,
+  domain: isProd ? "eventwaale.in" : "localhost",
 };
 
 export const REFRESH_COOKIE_OPTIONS = {
@@ -15,4 +16,5 @@ export const REFRESH_COOKIE_OPTIONS = {
   sameSite: isProd ? "none" : "lax",
   path: "/", // 🔥 REQUIRED
   maxAge: 7 * 24 * 60 * 60 * 1000,
+  domain: isProd ? "eventwaale.in" : "localhost",
 };
