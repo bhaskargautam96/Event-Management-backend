@@ -59,7 +59,7 @@ export const googleAuthCallback = async (req, res) => {
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
 
     // 6️⃣ Redirect WITHOUT tokens
-    // return res.redirect(process.env.FRONTEND_URL);
+    return res.redirect(process.env.FRONTEND_URL);
   } catch (error) {
     console.error("Google OAuth error:", error);
     return res.redirect(
