@@ -7,7 +7,6 @@ import {
 
 export const googleAuthCallback = async (req, res) => {
   try {
-    console.log("HEEEEEEE")
     const profile = req.user;
 
     const googleId = profile.id;
@@ -16,6 +15,7 @@ export const googleAuthCallback = async (req, res) => {
     const profileImage = profile.photos?.[0]?.value || "";
 
     let user;
+        console.log("Set-Cookie headers:", res.getHeaders()["set-cookie"]);
 
     // 1️⃣ Find by Google ID
     user = await User.findOne({
@@ -59,7 +59,11 @@ export const googleAuthCallback = async (req, res) => {
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
 
     // 6️⃣ Redirect WITHOUT tokens
-    return res.redirect(process.env.FRONTEND_URL);
+    return res.json({
+      accessToken,
+      refreshToken,
+    });
+    // return res.redirect(process.env.FRONTEND_URL);
   } catch (error) {
     console.error("Google OAuth error:", error);
     return res.redirect(

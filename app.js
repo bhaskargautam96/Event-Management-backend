@@ -20,7 +20,7 @@ app.use(
     origin: isProductionEnv ? "https://eventwaale.in" : "http://localhost:5175", // 🔥 EXACT frontend URL
     credentials: true, // 🔥 REQUIRED
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    exposedHeaders: ["Set-Cookie"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
 
