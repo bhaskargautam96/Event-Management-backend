@@ -24,7 +24,7 @@ authRouter.get(
   passport.authenticate("google", {
     scope: ["profile", "email"],
     prompt: "select_account"
-  })
+  }),
 );
 
 // Google redirects here
