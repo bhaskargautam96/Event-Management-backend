@@ -1,13 +1,18 @@
+// cookies.js
+const isProd = process.env.NODE_ENV === "production";
+
 export const ACCESS_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  maxAge: 60 * 60 * 1000, // 1 hour
+  secure: isProd,
+  sameSite: isProd ? "none" : "lax",
+  path: "/", // 🔥 REQUIRED
+  maxAge: 60 * 60 * 1000,
 };
 
 export const REFRESH_COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  secure: isProd,
+  sameSite: isProd ? "none" : "lax",
+  path: "/", // 🔥 REQUIRED
+  maxAge: 7 * 24 * 60 * 60 * 1000,
 };
