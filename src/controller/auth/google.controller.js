@@ -15,7 +15,7 @@ export const googleAuthCallback = async (req, res) => {
     const profileImage = profile.photos?.[0]?.value || "";
 
     let user;
-        console.log("Set-Cookie headers:", res.getHeaders()["set-cookie"]);
+        
 
     // 1️⃣ Find by Google ID
     user = await User.findOne({
