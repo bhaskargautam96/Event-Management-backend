@@ -14,9 +14,7 @@ import { redisConnection } from "./src/config/redis.js";
 const app = express();
 
 await connectToMongoDB()
-app.use(passport.initialize());
-app.use(express.json());
-app.use(cookieParser());
+
 app.use(
   cors({
     origin: isProductionEnv ? "https://eventwaale.in" : "http://localhost:5175", // 🔥 EXACT frontend URL
@@ -24,6 +22,10 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   }),
 );
+
+app.use(passport.initialize());
+app.use(express.json());
+app.use(cookieParser());
 
 // PostgreSQL (TEST) DATABASE CONNECTION
 try {
