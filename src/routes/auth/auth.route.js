@@ -22,8 +22,11 @@ authRouter.post("/set-password", setPasswordController);
 
 authRouter.post("/send-verification-otp", sendEmailVerificationOtp);
 authRouter.post("/verify-otp", verifyEmailOtp);
-
 authRouter.post("/google", googleAuth);
+
+authRouter.get("/health", (_, res) => {
+  return res.status(200).json({ message: "OK" });
+});
 
 authRouter.get(
   "/google",

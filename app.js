@@ -3,7 +3,7 @@ import  "dotenv/config"
 import connectToMongoDB from "./src/db/mongo.db.connection.js";
 import sql from "./src/db/postgres.db.connection.js";
 import authRouter from "./src/routes/auth/auth.route.js";
-import { isProductionEnv, routerVersion1 } from "./src/constants.js";
+import { allowedOrigins, routerVersion1 } from "./src/constants.js";
 
 import passport from "./src/config/passport.js";
 import errorHandler from "./src/middleware/errorHandler.middleware.js";
@@ -18,7 +18,7 @@ await connectToMongoDB()
 
 app.use(
   cors({
-    origin: isProductionEnv ? "https://eventwaale.in" : "http://localhost:5175", // 🔥 EXACT frontend URL
+    origin: allowedOrigins,// 🔥 EXACT frontend URL
     credentials: true, // 🔥 REQUIRED
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
