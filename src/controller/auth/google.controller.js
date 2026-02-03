@@ -9,14 +9,14 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const googleAuth = async (req, res) => {
   try {
-    const { token } = req.body;
+    const { token } = req.query; // NOT body
+
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
-
     const { email, name, picture, sub: googleId } = payload;
 
     let user = await User.findOne({ email });
@@ -36,19 +36,18 @@ export const googleAuth = async (req, res) => {
     const accessToken = signAccessToken(user);
     const refreshToken = signRefreshToken(user);
 
-    // 🔐 5️⃣ SET COOKIES (THIS REPLACES URL TOKENS)
+    user.refreshTokens.push({ token: refreshToken });
+    await user.save();
+
     res.cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS);
     res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
-    return res.json({
-      success: true,
-      user,
-    });
+
+    return res.redirect(process.env.FRONTEND_URL);
   } catch (error) {
-    res.status(401).json({
-      message: "Google authentication failed",
-    });
+    return res.redirect(`${process.env.FRONTEND_URL}/login?error=google`);
   }
 };
+
 
 export const googleAuthCallback = async (req, res) => {
   try {

@@ -10,6 +10,7 @@ import errorHandler from "./src/middleware/errorHandler.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { redisConnection } from "./src/config/redis.js";
+import userRouter from "./src/routes/user/user.route.js";
 // dotenv.config()
 const app = express();
 
@@ -37,6 +38,8 @@ try {
 }
 
 app.use(`${routerVersion1}/auth`, authRouter);
+app.use(`${routerVersion1}/user`, userRouter);
+
 
 
 

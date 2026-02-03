@@ -1,7 +1,7 @@
 
 import { verifyAccessToken } from "../../utils/jwt.js";
 
-import jwt from "jsonwebtoken";
+import jwt, { decode } from "jsonwebtoken";
 import ApiError from "../../utils/ApiError.js";
 
 export const authMiddleware = (req, _, next) => {
@@ -17,7 +17,7 @@ export const authMiddleware = (req, _, next) => {
 
     // 3️⃣ Attach user to request
     req.user = {
-      id: decoded._id,
+      id: decoded.id||decoded._id,
       role: decoded.role,
     };
 
