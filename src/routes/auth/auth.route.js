@@ -9,6 +9,7 @@ import ApiResponse from "../../utils/ApiResponse.js";
 import { loginController, passwordGenerate, setPasswordController } from "../../controller/auth/login.controller.js";
 import { registerController } from "../../controller/users/register.controller.js";
 import { sendEmailVerificationOtp, verifyEmailOtp } from "../../controller/auth/verification.controller.js";
+import { getUserDetail } from "../../controller/users/user.controller.js";
 
 const authRouter = express.Router();
 
@@ -33,25 +34,17 @@ authRouter.get(
 );
 
 // Google redirects here
-authRouter.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: "/login",
-  }),
-  googleAuthCallback
-);
+// authRouter.get(
+//   "/google/callback",
+//   passport.authenticate("google", {
+//     session: false,
+//     failureRedirect: "/login",
+//   }),
+//   googleAuthCallback
+// );
 
 
-authRouter.get("/authenticated", authMiddleware, (req, res) => {
-  res.status(200).json(
-    new ApiResponse("Authenticated user", {
-      user: req.user,
-      accessToken: req.cookies.accessToken,
-      refreshToken: req.cookies.refreshToken,
-    })
-  );
-});
+authRouter.get("/authenticated", authMiddleware,getUserDetail);
 
 
 export default authRouter;
