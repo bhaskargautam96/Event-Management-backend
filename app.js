@@ -18,7 +18,14 @@ await connectToMongoDB()
 
 app.use(
   cors({
-    origin: allowedOrigins,// 🔥 EXACT frontend URL
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`), false);
+      }
+    },
     credentials: true, // 🔥 REQUIRED
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -51,7 +58,7 @@ app.use(`${routerVersion1}/user`, userRouter);
 
 app.use(errorHandler);
 app.get("/", (req, res) => {
-  res.json({ message: "Docker backend running 🚀" });
+  res.json({ message: "Event Management backend running 🚀" });
 });
 
 export default app;
