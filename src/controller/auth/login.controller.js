@@ -13,7 +13,6 @@ export const loginController = async (req, res) => {
         if (!email || !password) {
             throw new ApiError(400, "All fields are required");
         }
-        // const user = await User.findOne({ email });
         const user = await User.findOne({ email }).select("+password");
 
         console.log("🚀 ~ loginController ~ user:", user.password)
@@ -26,14 +25,14 @@ export const loginController = async (req, res) => {
             throw new ApiError(401, "Invalid credentials");
         }
     
-        // const accessToken = signAccessToken(user);
-        // const refreshToken = signRefreshToken(user);
+        const accessToken = signAccessToken(user);
+        const refreshToken = signRefreshToken(user);
     
         // console.log("Login controller");
-        // user.refreshTokens.push({ token: refreshToken });
-        // await user.save();
-        // res.cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS);
-        // res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
+        user.refreshTokens.push({ token: refreshToken });
+        await user.save();
+        res.cookie("accessToken", accessToken, ACCESS_COOKIE_OPTIONS);
+        res.cookie("refreshToken", refreshToken, REFRESH_COOKIE_OPTIONS);
         return res.json({
             status:200,
             message:"Login successfully",
@@ -107,9 +106,9 @@ export const setPasswordController = async (req, res) => {
     }
 
     // 🚨 Only allow for social accounts WITHOUT password
-    if (!user.isSocialAccount) {
-      throw new ApiError(400, "Password already exists for this account");
-    }
+    // if (!user.isSocialAccount) {
+    //   throw new ApiError(400, "Password already exists for this account");
+    // }
 
     if (user.password) {
       throw new ApiError(400, "Password already set. Please login.");
