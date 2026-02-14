@@ -51,7 +51,6 @@ export const sendEmailVerificationOtp = asyncHandler(async (req, res) => {
   });
 });
 
-
 export const verifyEmailOtp = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
 
