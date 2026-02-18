@@ -1,0 +1,53 @@
+
+
+import express from "express";
+import { logoutAllController, logoutController, refreshTokenController } from "../../controller/auth/auth.controller.js";
+import passport from "passport";
+import { googleAuth, googleAuthCallback } from "../../controller/auth/google.controller.js";
+import { authMiddleware } from "../../middleware/auth/auth.middleware.js";
+import ApiResponse from "../../utils/ApiResponse.js";
+import { loginController, passwordGenerate, setPasswordController } from "../../controller/auth/login.controller.js";
+import { registerController } from "../../controller/users/register.controller.js";
+import { sendEmailVerificationOtp, verifyEmailOtp } from "../../controller/auth/verification.controller.js";
+import { getUserDetail } from "../../controller/users/user.controller.js";
+
+const authRouter = express.Router();
+
+authRouter.get("/refresh-token", refreshTokenController);
+authRouter.post("/logout", logoutController);
+authRouter.post("/login", loginController);
+authRouter.post("/register", registerController);
+authRouter.post("/password-generate", passwordGenerate);
+authRouter.post("/set-password", setPasswordController);
+
+authRouter.post("/send-verification-otp", sendEmailVerificationOtp);
+authRouter.post("/verify-otp", verifyEmailOtp);
+authRouter.post("/google", googleAuth);
+
+authRouter.get("/health", (_, res) => {
+  return res.status(200).json({ message: "OK" });
+});
+
+authRouter.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    prompt: "select_account"
+  }),
+);
+
+// Google redirects here
+// authRouter.get(
+//   "/google/callback",
+//   passport.authenticate("google", {
+//     session: false,
+//     failureRedirect: "/login",
+//   }),
+//   googleAuthCallback
+// );
+
+
+authRouter.get("/authenticated", authMiddleware,getUserDetail);
+
+
+export default authRouter;

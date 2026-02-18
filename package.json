@@ -1,0 +1,44 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js",
+    "dev": "nodemon index.js",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^7.3.0",
+    "axios": "^1.13.5",
+    "bcryptjs": "^3.0.3",
+    "bullmq": "^5.66.5",
+    "cloudinary": "^1.41.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "google-auth-library": "^10.5.0",
+    "ioredis": "^5.9.2",
+    "joi": "^18.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.0.2",
+    "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "nodemailer": "^7.0.12",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "postgres": "^3.4.8",
+    "resend": "^6.7.0",
+    "streamifier": "^0.1.1",
+    "ua-parser-js": "^2.0.9"
+  },
+  "devDependencies": {
+    "prisma": "^7.3.0"
+  }
+}
