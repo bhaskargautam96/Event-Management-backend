@@ -30,6 +30,7 @@ export const getDeviceInfo = async (req, res) => {
     const geo = await axios.get(`http://ip-api.com/json/${ip}`);
     const savedData = await insertRecord("device_info", {
       ip,
+      user_id: req?.user?.id || null,
       location_info: geo.data,
       browser_info: ua.browser,
       os: ua.os,
