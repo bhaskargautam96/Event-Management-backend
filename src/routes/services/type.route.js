@@ -21,7 +21,7 @@ typeCategoryRouter.post(
   validate(createTypeSchema),
   addTypeCategories,
 );
-typeCategoryRouter.patch(
+typeCategoryRouter.put(
   "/category/:id",
   authMiddleware,
   upload.single("image"),

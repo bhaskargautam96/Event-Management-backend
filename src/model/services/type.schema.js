@@ -19,7 +19,6 @@ const typeSchema = new mongoose.Schema(
       ref: "User", // must match your User model name
       required: true,
     },
-
     // 🔥 Store role snapshot (optional but recommended)
     addedByRole: {
       type: String,

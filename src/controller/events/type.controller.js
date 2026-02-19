@@ -1,39 +1,62 @@
 import cloudinary from "../../config/cloudinary.js";
-import SubType from "../../model/services/subType.schema.js";
 import Type from "../../model/services/type.schema.js";
 import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
+import SubType from "../../model/services/subType.schema.js";
+
 
 export const getTypeCategories = async (req, res) => {
   try {
     let { page = 1, limit = 10, search = "" } = req.query;
-    const role  = req.user?.role; // ✅ safe
+    const role = req.user?.role;
 
     page = parseInt(page);
     limit = parseInt(limit);
 
     const skip = (page - 1) * limit;
 
-    // 🔥 Role-based filter
     let filter = {};
 
     if (!["SUPERADMIN", "ADMIN"].includes(role)) {
       filter.isDelete = false;
     }
 
-    // 🔍 Optional search
     if (search) {
       filter.name = { $regex: search, $options: "i" };
     }
 
-    // const subTypeCount =await  SubType.fin
+    // 🔥 AGGREGATION START
+    const types = await Type.aggregate([
+      { $match: filter },
 
-    const [types, totalRecords] = await Promise.all([
-      Type.find(filter).sort({ updatedAt: -1 }).skip(skip).limit(limit),
-      Type.countDocuments(filter),
+      {
+        $lookup: {
+          from: "subtypes", // collection name (must be lowercase plural of model)
+          localField: "_id",
+          foreignField: "typeId",
+          as: "subCategories",
+        },
+      },
+
+      {
+        $addFields: {
+          subCategoryCount: { $size: "$subCategories" },
+        },
+      },
+
+      {
+        $project: {
+          subCategories: 0, // remove full array, only send count
+        },
+      },
+
+      { $sort: { updatedAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
     ]);
-    console.log("🚀 ~ getTypeCategories ~ types:", types)
+
+    const totalRecords = await Type.countDocuments(filter);
 
     return res.status(200).json({
       success: true,
@@ -52,6 +75,7 @@ export const getTypeCategories = async (req, res) => {
     });
   }
 };
+
 
 export const addTypeCategories = async (req, res) => {
   try {

@@ -27,11 +27,11 @@ const subTypeSchema = new mongoose.Schema({
     required: true,
   },
   addedByRole: {
-    type: String,
+    type: String,     
     enum: ["ORGANIZER", "ADMIN", "SUPERADMIN"],
     required: true,
   },
 });
 
-const SubType = mongoose.model("SubType", subTypeSchema);
+const SubType = mongoose.model("subtype", subTypeSchema);
 export default SubType;

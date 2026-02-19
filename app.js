@@ -17,6 +17,7 @@ import axios from "axios";
 import { insertRecord } from "./src/utils/queryFunction.js";
 import { getDeviceInfo } from "./src/controller/ipDevice.controller.js";
 import { passCookieOptional } from "./src/middleware/auth/auth.middleware.js";
+import subTypeCategoryRouter from "./src/routes/services/subType.route.js";
 // dotenv.config()
 const app = express();
 
@@ -55,6 +56,7 @@ try {
 app.use(`${routerVersion1}/auth`, authRouter);
 app.use(`${routerVersion1}/user`, userRouter);
 app.use(`${routerVersion1}/service`, typeCategoryRouter);
+app.use(`${routerVersion1}/service`, subTypeCategoryRouter);
 
 
 

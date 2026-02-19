@@ -24,7 +24,7 @@ subTypeCategoryRouter.post(
   validate(createSubTypeSchema),
   addSubTypeCategories,
 );
-subTypeCategoryRouter.patch(
+subTypeCategoryRouter.put(
   "/sub-category/:id",
   authMiddleware,
   upload.single("image"),
