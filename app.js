@@ -1,23 +1,22 @@
+import "dotenv/config";
 import express from "express";
-import  "dotenv/config"
-import connectToMongoDB from "./src/db/mongo.db.connection.js";
-import    sql from "./src/db/postgres.db.connection.js";
-import authRouter from "./src/routes/auth/auth.route.js";
 import { allowedOrigins, routerVersion1 } from "./src/constants.js";
+import connectToMongoDB from "./src/db/mongo.db.connection.js";
+import sql from "./src/db/postgres.db.connection.js";
+import authRouter from "./src/routes/auth/auth.route.js";
 
-import passport from "./src/config/passport.js";
-import errorHandler from "./src/middleware/errorHandler.middleware.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { redisConnection } from "./src/config/redis.js";
-import userRouter from "./src/routes/user/user.route.js";
-import typeCategoryRouter from "./src/routes/services/type.route.js";
-import { UAParser } from "ua-parser-js";
-import axios from "axios";
-import { insertRecord } from "./src/utils/queryFunction.js";
+import passport from "./src/config/passport.js";
 import { getDeviceInfo } from "./src/controller/ipDevice.controller.js";
 import { passCookieOptional } from "./src/middleware/auth/auth.middleware.js";
+import errorHandler from "./src/middleware/errorHandler.middleware.js";
 import subTypeCategoryRouter from "./src/routes/services/subType.route.js";
+import typeCategoryRouter from "./src/routes/services/type.route.js";
+import userRouter from "./src/routes/user/user.route.js";
+import eventRouter from "./src/routes/events/event.route.js";
+import bookingRouter from "./src/routes/events/booking.route.js";
+import viewerRouter from "./src/routes/events/viewer.route.js";
 // dotenv.config()
 const app = express();
 
@@ -57,6 +56,9 @@ app.use(`${routerVersion1}/auth`, authRouter);
 app.use(`${routerVersion1}/user`, userRouter);
 app.use(`${routerVersion1}/service`, typeCategoryRouter);
 app.use(`${routerVersion1}/service`, subTypeCategoryRouter);
+app.use(`${routerVersion1}/events`, eventRouter);
+app.use(`${routerVersion1}/bookings`, bookingRouter);
+app.use(`${routerVersion1}/viewers`, viewerRouter);
 
 
 

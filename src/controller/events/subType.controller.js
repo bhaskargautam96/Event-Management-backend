@@ -22,12 +22,27 @@ export const getSubTypeCategories = async (req, res) => {
       filter.name = { $regex: search, $options: "i" };
     }
     const [subTypes, totalRecords] = await Promise.all([
-      SubType.find(filter).sort({ updatedAt: -1 }).skip(skip).limit(limit),
+      SubType.find(filter)
+        .populate('typeId', 'name')
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit),
       SubType.countDocuments(filter),
     ]);
+
+    // Transform data to include typeName instead of nested typeId
+    const transformedData = subTypes.map(subType => {
+      const subTypeObj = subType.toObject();
+      return {
+        ...subTypeObj,
+        typeName: subTypeObj.typeId?.name || null,
+        typeId: subTypeObj.typeId?._id || subTypeObj.typeId
+      };
+    });
+
     return res.status(200).json({
       success: true,
-      data: subTypes,
+      data: transformedData,
       pagination: {
         currentPage: page,
         totalPages: Math.ceil(totalRecords / limit),
@@ -93,7 +108,7 @@ export const updatSubTypeCategory = async (req, res) => {
     const { name,description } = req.body;
     const {role,id:adminId} =req.user
 
-    const subCategory = await SubType.findById(id);
+    const subCategory = await SubType.findById(id).populate('typeId', 'name description image');
     if (!id)
       return res.json({
         error: "Id Not founed",
@@ -136,9 +151,17 @@ export const updatSubTypeCategory = async (req, res) => {
 
     await subCategory.save();
 
+    // Transform response to include typeName
+    const subCategoryObj = subCategory.toObject();
+    const transformedData = {
+      ...subCategoryObj,
+      typeName: subCategoryObj.typeId?.name || null,
+      typeId: subCategoryObj.typeId?._id || subCategoryObj.typeId
+    };
+
     res.json({
       success: true,
-      data: subCategory,
+      data: transformedData,
     });
   } catch (error) {
     res.status(500).json({
@@ -158,7 +181,7 @@ export const deleteSubTypeCategory = async (req, res) => {
       });
     }
 
-    const subType = await SubType.findById(id);
+    const subType = await SubType.findById(id).populate('typeId', 'name description image');
 
     if (!subType) {
       return res.status(404).json({
@@ -172,8 +195,16 @@ export const deleteSubTypeCategory = async (req, res) => {
     subType.addedByUser=adminId;
     await subType.save();
 
+    // Transform response to include typeName
+    const subTypeObj = subType.toObject();
+    const transformedData = {
+      ...subTypeObj,
+      typeName: subTypeObj.typeId?.name || null,
+      typeId: subTypeObj.typeId?._id || subTypeObj.typeId
+    };
+
     return res.json(
-      new ApiResponse("Category soft deleted successfully", subType),
+      new ApiResponse("Category soft deleted successfully", transformedData),
     );
   } catch (error) {
     return res.status(500).json({

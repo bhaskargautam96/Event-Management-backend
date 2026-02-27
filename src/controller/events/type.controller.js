@@ -15,9 +15,7 @@ export const getTypeCategories = async (req, res) => {
     limit = parseInt(limit);
 
     const skip = (page - 1) * limit;
-
     let filter = {};
-
     if (!["SUPERADMIN", "ADMIN"].includes(role)) {
       filter.isDelete = false;
     }
