@@ -2,6 +2,7 @@ import { redisConnection } from "../../config/redis.js";
 import asyncHandler from "../../middleware/asycnHandler.middleware.js";
 import User from "../../model/user/user.schema.js";
 import { mailQueue } from "../../queues/index.js";
+import { renderEmailTemplate } from "../../services/email/template.service.js";
 import ApiError from "../../utils/ApiError.js";
 import { generateOTP } from "../../utils/generateOtp.js";
 
@@ -25,20 +26,22 @@ export const sendEmailVerificationOtp = asyncHandler(async (req, res) => {
   const otp = generateOTP();
 
   const redisKey = `email:otp:${email}`;
+  const otpExpirySeconds = 30;
+  const expiryText = otpExpirySeconds < 60 ? `${otpExpirySeconds} seconds` : `${Math.floor(otpExpirySeconds / 60)} minutes`;
 
   // 2️⃣ Store OTP in Redis with TTL (5 min)
-  await redisConnection.set(redisKey, otp, "EX", 30); // expiry time in seconds 30-seconds for testing
+  await redisConnection.set(redisKey, otp, "EX", otpExpirySeconds); // expiry time in seconds 30-seconds for testing
+
+  const html = await renderEmailTemplate("email/verification-otp.ejs", {
+    otp,
+    expiryText,
+  });
 
   // 3️⃣ Send OTP via mail queue
   await mailQueue.add("email-verification-otp", {
     to: email,
     subject: "Email Verification Code",
-    html: `
-      <h2>Email Verification</h2>
-      <p>Your verification code is:</p>
-      <h1>${otp}</h1>
-      <p>This code will expire in 5 minutes.</p>
-    `,
+    html,
   });
 
   res.status(200).json({
