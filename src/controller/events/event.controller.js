@@ -384,9 +384,7 @@ export const createEvent = async (req, res) => {
         ${eventStatus},
         ${JSON.stringify(bookingSettings)},
         ${JSON.stringify(metadata)}
-      )
-      RETURNING *
-    `;
+      ) RETURNING *`;
 
     return res.status(201).json(
       new ApiResponse("Event created successfully", {

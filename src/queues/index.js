@@ -9,7 +9,6 @@ export const mailQueue = new Queue("mail-queue", {
       type: "exponential",
       delay: 5000,
     },
-    
     removeOnComplete: true, // 🔥 auto cleanup
     removeOnFail: false, // keep failed jobs
   },
