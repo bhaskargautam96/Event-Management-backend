@@ -42,7 +42,7 @@ const parseEventFields = (event) => {
 /* =====================================================
    1️⃣ GET ALL EVENTS (WITH FILTERS & PAGINATION)
 ===================================================== */
-export const getAllEvents = async (req, res) => {
+export const  getAllEvents = async (req, res) => {
   try {
     let {
       page = 1,
@@ -73,7 +73,7 @@ export const getAllEvents = async (req, res) => {
     // Admin/SuperAdmin can see all, others only active
     if (!["SUPERADMIN", "ADMIN"].includes(role)) {
       whereConditions.push(`is_delete = false`);
-      whereConditions.push(`status = 'ACTIVE'`);
+      whereConditions.push(`status = '1'`);
     }
 
     // Apply status filter if provided

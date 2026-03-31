@@ -18,6 +18,7 @@ import eventRouter from "./src/routes/events/event.route.js";
 import bookingRouter from "./src/routes/events/booking.route.js";
 import viewerRouter from "./src/routes/events/viewer.route.js";
 import locationRouter from "./src/routes/location.route.js";
+import dashboardRouter from "./src/routes/dashboard/dashboard.js";
 // dotenv.config()
 const app = express();
 
@@ -54,13 +55,15 @@ try {
 }
 
 app.use(`${routerVersion1}/auth`, authRouter);
-app.use(`${routerVersion1}/user`, userRouter);
+app.use(`${routerVersion1}/users`, userRouter);
 app.use(`${routerVersion1}/service`, typeCategoryRouter);
 app.use(`${routerVersion1}/service`, subTypeCategoryRouter);
 app.use(`${routerVersion1}/events`, eventRouter);
 app.use(`${routerVersion1}/bookings`, bookingRouter);
 app.use(`${routerVersion1}/viewers`, viewerRouter);
 app.use(`${routerVersion1}/location`, locationRouter);
+
+app.use("/api/v1/dashboard", dashboardRouter);
 
 
 

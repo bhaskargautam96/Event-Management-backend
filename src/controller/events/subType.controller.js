@@ -18,8 +18,9 @@ export const getSubTypeCategories = async (req, res) => {
     if (!["SUPERADMIN", "ADMIN"].includes(role)) {
       filter.isDeleted = false;
     }
-    if (search) {
-      filter.name = { $regex: search, $options: "i" };
+    const searchTerm = String(search || "").trim();
+    if (searchTerm) {
+      filter.name = { $regex: searchTerm, $options: "i" };
     }
     const [subTypes, totalRecords] = await Promise.all([
       SubType.find(filter)

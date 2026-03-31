@@ -30,7 +30,7 @@ export const sendEmailVerificationOtp = asyncHandler(async (req, res) => {
   const expiryText = otpExpirySeconds < 60 ? `${otpExpirySeconds} seconds` : `${Math.floor(otpExpirySeconds / 60)} minutes`;
 
   // 2️⃣ Store OTP in Redis with TTL (5 min)
-  await redisConnection.set(redisKey, otp, "EX", otpExpirySeconds); // expiry time in seconds 30-seconds for testing
+  await redisConnection.set(redisKey, otp, "EX", otpExpirySeconds); // expiry time in seconds 30-seconds 
 
   const html = await renderEmailTemplate("email/verification-otp.ejs", {
     otp,
@@ -62,16 +62,11 @@ export const verifyEmailOtp = asyncHandler(async (req, res) => {
   }
 
   const redisKey = `email:otp:${email}`;
-
-  // ✅ READ OTP FROM REDIS
   const storedOtp = await redisConnection.get(redisKey);
-
-  // ❌ OTP expired or never existed
   if (!storedOtp) {
     throw new ApiError(400, "OTP expired or invalid");
   }
 
-  // ❌ OTP does not match
   if (storedOtp !== otp) {
     throw new ApiError(400, "Invalid OTP");
   }

@@ -20,8 +20,9 @@ export const getTypeCategories = async (req, res) => {
       filter.isDelete = false;
     }
 
-    if (search) {
-      filter.name = { $regex: search, $options: "i" };
+    const searchTerm = String(search || "").trim();
+    if (searchTerm) {
+      filter.name = { $regex: searchTerm, $options: "i" };
     }
 
     // 🔥 AGGREGATION START
