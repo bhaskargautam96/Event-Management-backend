@@ -4,9 +4,9 @@ import ApiError from "../../utils/ApiError.js";
 import ApiResponse from "../../utils/ApiResponse.js";
 import { uploadToCloudinary } from "../../utils/cloudinary.js";
 
-/* =====================================================
+/* ===============================================
    HELPER: Parse JSON string fields in event object
-===================================================== */
+   =============================================== */
 const parseEventFields = (event) => {
   if (!event) return event;
   
@@ -39,9 +39,9 @@ const parseEventFields = (event) => {
   return parsed;
 };
 
-/* =====================================================
+/* =================================================
    1️⃣ GET ALL EVENTS (WITH FILTERS & PAGINATION)
-===================================================== */
+   ================================================= */
 export const  getAllEvents = async (req, res) => {
   try {
     let {
@@ -143,17 +143,14 @@ export const  getAllEvents = async (req, res) => {
     ];
     const sortField = allowedSortFields.includes(sortBy) ? sortBy : "created_at";
     const sortDirection = sortOrder.toLowerCase() === "asc" ? "ASC" : "DESC";
-
     // Fetch events with pagination
     const eventsQuery = `
       SELECT * FROM events
       ${whereClause}
       ORDER BY ${sortField} ${sortDirection}
-      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
+      LIMIT $${paramIndex} OFFSET $${paramIndex+1}
     `;
-
     params.push(limit, skip);
-
     // Count total records
     const countQuery = `
       SELECT COUNT(*) as total FROM events
@@ -181,7 +178,6 @@ export const  getAllEvents = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Get Events Error:", error);
     return res.status(500).json({
       success: false,
       message: error.message,

@@ -29,10 +29,9 @@ export const authMiddleware = (req, _, next) => {
   }
 };
 
-export const passCookieOptional = (req, res, next) => {
+export const passCookieOptional = (req, _, next) => {
   try {
     const accessToken = req.cookies?.accessToken;
-    console.log("🚀 ~ passCookieOptional ~ accessToken:", accessToken)
     // 🔹 If no token → continue without user
     if (!accessToken) {
       req.user = null;

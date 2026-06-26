@@ -5,10 +5,14 @@ const subTypeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  typeId: {
-    type: mongoose.Schema.Types.ObjectId,
+  typeIds: {
+    type: [mongoose.Schema.Types.ObjectId],
     ref: "Type",
     required: true,
+    validate: {
+      validator: (arr) => Array.isArray(arr) && arr.length > 0,
+      message: "At least one category (typeId) is required",
+    },
   },
   description: {
     type: String,

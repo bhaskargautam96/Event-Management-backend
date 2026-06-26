@@ -31,22 +31,36 @@ export const getTypeCategories = async (req, res) => {
 
       {
         $lookup: {
-          from: "subtypes", // collection name (must be lowercase plural of model)
-          localField: "_id",
-          foreignField: "typeId",
-          as: "subCategories",
+          from: "subtypes",
+          let: { categoryId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: [
+                    "$$categoryId",
+                    { $ifNull: ["$typeIds", []] }, // guard: if typeIds is null/missing, use empty array
+                  ],
+                },
+              },
+            },
+            { $count: "count" },
+          ],
+          as: "subCategoryResult",
         },
       },
 
       {
         $addFields: {
-          subCategoryCount: { $size: "$subCategories" },
+          subCategoryCount: {
+            $ifNull: [{ $arrayElemAt: ["$subCategoryResult.count", 0] }, 0],
+          },
         },
       },
 
       {
         $project: {
-          subCategories: 0, // remove full array, only send count
+          subCategoryResult: 0,
         },
       },
 

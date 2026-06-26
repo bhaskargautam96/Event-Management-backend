@@ -19,18 +19,30 @@ export const createSubTypeSchema = Joi.object({
 
   description: Joi.string().trim().allow("").optional(),
 
-  typeId: Joi.string()
+  typeIds: Joi.alternatives()
+    .try(
+      Joi.array()
+        .items(
+          Joi.string().custom((value, helpers) => {
+            if (!mongoose.Types.ObjectId.isValid(value)) {
+              return helpers.error("any.invalid");
+            }
+            return value;
+          })
+        )
+        .min(1),
+      Joi.string().custom((value, helpers) => {
+        if (!mongoose.Types.ObjectId.isValid(value)) {
+          return helpers.error("any.invalid");
+        }
+        return value;
+      })
+    )
     .required()
-    .custom((value, helpers) => {
-      if (!mongoose.Types.ObjectId.isValid(value)) {
-        return helpers.error("any.invalid");
-      }
-      return value;
-    })
     .messages({
-      "any.invalid": "Invalid typeId",
-      "string.empty": "typeId is required",
-      "any.required": "typeId is required",
+      "any.invalid": "Invalid typeId in typeIds",
+      "any.required": "typeIds is required",
+      "array.min": "At least one typeId is required",
     }),
 });
 

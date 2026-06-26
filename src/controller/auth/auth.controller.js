@@ -58,12 +58,12 @@ export const refreshTokenController = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse("Access token refreshed"));
 });
 
-/* =====================================================
-   2️⃣ LOGOUT (SINGLE DEVICE)
-===================================================== */
+/* ==================================================
+      2️⃣ LOGOUT (SINGLE DEVICE)
+   ================================================== */
 export const logoutController = async (req, res) => {
   try {
-    // 🔥 1️⃣ Read refresh token from COOKIE
+    // 1️⃣ Read refresh token from COOKIE
     const refreshToken = req.cookies.refreshToken;
 
     if (refreshToken) {
@@ -73,7 +73,7 @@ export const logoutController = async (req, res) => {
         const user = await User.findById(decoded.id);
 
         if (user) {
-          // 🔥 2️⃣ Remove this refresh token from DB
+          // 2️⃣ Remove this refresh token from DB
           user.refreshTokens = user.refreshTokens.filter(
             (t) => t.token !== refreshToken
           );
@@ -82,13 +82,12 @@ export const logoutController = async (req, res) => {
       }
     }
 
-    // 🔥 3️⃣ Clear cookies (THIS IS LOGOUT)
+    //3️⃣ Clear cookies (THIS IS LOGOUT)
     res.clearCookie("accessToken", ACCESS_COOKIE_OPTIONS);
     res.clearCookie("refreshToken", REFRESH_COOKIE_OPTIONS);
 
     return res.status(200).json(new ApiResponse("Logged out successfully"));
   } catch (error) {
-    console.error("Logout error:", error);
     return res.status(500).json({ message: "Server error" });
   }
 };

@@ -24,20 +24,20 @@ export const getSubTypeCategories = async (req, res) => {
     }
     const [subTypes, totalRecords] = await Promise.all([
       SubType.find(filter)
-        .populate('typeId', 'name')
+        .populate('typeIds', 'name')
         .sort({ updatedAt: -1 })
         .skip(skip)
         .limit(limit),
       SubType.countDocuments(filter),
     ]);
 
-    // Transform data to include typeName instead of nested typeId
+    // Transform data to include typeNames instead of nested typeIds
     const transformedData = subTypes.map(subType => {
       const subTypeObj = subType.toObject();
       return {
         ...subTypeObj,
-        typeName: subTypeObj.typeId?.name || null,
-        typeId: subTypeObj.typeId?._id || subTypeObj.typeId
+        typeNames: (subTypeObj.typeIds || []).map(t => t?.name || null),
+        typeIds: (subTypeObj.typeIds || []).map(t => t?._id || t),
       };
     });
 
@@ -61,8 +61,8 @@ export const getSubTypeCategories = async (req, res) => {
 
 export const addSubTypeCategories = async (req, res) => {
   try {
-    const { name, description,typeId } = req.body;
-    const {role,id}=req.user
+    const { name, description, typeIds } = req.body;
+    const { role, id } = req.user;
 
     if (!name || !req.file) {
       return res.status(400).json(
@@ -71,17 +71,25 @@ export const addSubTypeCategories = async (req, res) => {
         }),
       );
     }
+
+    // Normalize typeIds: accept a single string or an array
+    const normalizedTypeIds = Array.isArray(typeIds)
+      ? typeIds
+      : typeof typeIds === "string"
+      ? [typeIds]
+      : [];
+
     const uploadResult = await uploadToCloudinary({
       fileBuffer: req.file.buffer,
       folder: "event-waale/service-subtype",
-      resourceType:"image"
+      resourceType: "image",
     });
     const type = await SubType.create({
       name,
       description,
-      typeId,
-      addedByRole:role,
-      addedByUser:id,
+      typeIds: normalizedTypeIds,
+      addedByRole: role,
+      addedByUser: id,
       image: {
         url: uploadResult.secure_url,
         publicId: uploadResult.public_id,
@@ -106,37 +114,45 @@ export const addSubTypeCategories = async (req, res) => {
 export const updatSubTypeCategory = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name,description } = req.body;
-    const {role,id:adminId} =req.user
+    const { name, description, typeIds } = req.body;
+    const { role, id: adminId } = req.user;
 
-    const subCategory = await SubType.findById(id).populate('typeId', 'name description image');
+    const subCategory = await SubType.findById(id).populate('typeIds', 'name description image');
     if (!id)
       return res.json({
-        error: "Id Not founed",
+        error: "Id Not found",
       });
 
     if (!subCategory) {
       return res.status(404).json({
-        message: "SubType  not found",
+        message: "SubType not found",
       });
     }
 
-    // 1️⃣ Update name if provided
-    if (name||description) {
-      subCategory.name=name;
-      subCategory.description=description
-      subCategory.addedByRole=role,
-      subCategory.addedByUser=adminId
+    // 1️⃣ Update fields if provided
+    if (name) subCategory.name = name;
+    if (description !== undefined) subCategory.description = description;
+    subCategory.addedByRole = role;
+    subCategory.addedByUser = adminId;
+
+    // 2️⃣ Update typeIds if provided
+    if (typeIds !== undefined) {
+      const normalizedTypeIds = Array.isArray(typeIds)
+        ? typeIds
+        : typeof typeIds === "string"
+        ? [typeIds]
+        : [];
+      subCategory.typeIds = normalizedTypeIds;
     }
 
-    // 2️⃣ If new image uploaded → replace old image
+    // 3️⃣ If new image uploaded → replace old image
     if (req.file) {
       // 🔥 Delete old image from Cloudinary
       if (subCategory.image?.publicId) {
         await cloudinary.uploader.destroy(subCategory.image.publicId);
       }
 
-      //   🔥 Upload new image
+      // 🔥 Upload new image
       const uploadResult = await uploadToCloudinary({
         fileBuffer: req.file.buffer,
         folder: "event-waale/service-subtype",
@@ -152,12 +168,12 @@ export const updatSubTypeCategory = async (req, res) => {
 
     await subCategory.save();
 
-    // Transform response to include typeName
+    // Transform response to include typeNames
     const subCategoryObj = subCategory.toObject();
     const transformedData = {
       ...subCategoryObj,
-      typeName: subCategoryObj.typeId?.name || null,
-      typeId: subCategoryObj.typeId?._id || subCategoryObj.typeId
+      typeNames: (subCategoryObj.typeIds || []).map(t => t?.name || null),
+      typeIds: (subCategoryObj.typeIds || []).map(t => t?._id || t),
     };
 
     res.json({
@@ -182,7 +198,7 @@ export const deleteSubTypeCategory = async (req, res) => {
       });
     }
 
-    const subType = await SubType.findById(id).populate('typeId', 'name description image');
+    const subType = await SubType.findById(id).populate('typeIds', 'name description image');
 
     if (!subType) {
       return res.status(404).json({
@@ -192,16 +208,16 @@ export const deleteSubTypeCategory = async (req, res) => {
 
     // 🔥 Soft delete
     subType.isDelete = true;
-    subType.addedByRole=role,
-    subType.addedByUser=adminId;
+    subType.addedByRole = role;
+    subType.addedByUser = adminId;
     await subType.save();
 
-    // Transform response to include typeName
+    // Transform response to include typeNames
     const subTypeObj = subType.toObject();
     const transformedData = {
       ...subTypeObj,
-      typeName: subTypeObj.typeId?.name || null,
-      typeId: subTypeObj.typeId?._id || subTypeObj.typeId
+      typeNames: (subTypeObj.typeIds || []).map(t => t?.name || null),
+      typeIds: (subTypeObj.typeIds || []).map(t => t?._id || t),
     };
 
     return res.json(
